@@ -1,2 +1,2 @@
-tmp
-docker-compose.yaml
+# Temporary dirs files
+**/tmp
