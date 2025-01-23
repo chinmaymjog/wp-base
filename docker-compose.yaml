@@ -1,0 +1,28 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    user: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=P@s$w0rD
+      - MYSQL_DATABASE=wp-base
+      - MYSQL_USER=wp-user
+      - MYSQL_PASSWORD=SeCret
+    volumes:
+      - ./tmp:/var/lib/mysql
+
+  wp:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: wp
+    environment:
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_USER=wp-user
+      - WORDPRESS_DB_PASSWORD=SeCret
+      - WORDPRESS_DB_NAME=wp-base
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - mysql
