@@ -1,11 +1,18 @@
-docker-build:
-  # Use the official docker image.
+default:
   image: docker:latest
-  stage: build
   services:
     - docker:dind
   before_script:
-    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY
+    - docker info && docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY
+
+variables:
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+
+docker-build:
+  stage: build
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -20,5 +27,6 @@ docker-build:
     - docker build --pull -t "$DOCKER_REGISTRY_NAME/$CI_PROJECT_NAME${tag}" .
     - docker push "$DOCKER_REGISTRY_NAME/$CI_PROJECT_NAME${tag}"
   # Run this job in a branch where a Dockerfile exists
+  # when: manual
   tags:
     - docker
